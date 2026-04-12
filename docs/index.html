@@ -1,0 +1,1567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Esri UK · Public Safety BD Digest</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Libre+Franklin:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+    --ink:       #0d1117;
+    --ink-2:     #1c2333;
+    --ink-3:     #2d3748;
+    --bg:        #f4f5f9;
+    --white:     #ffffff;
+    --border:    #e2e8f0;
+    --muted:     #718096;
+    --sidebar-w: 272px;
+    --priority:  #c0392b;
+    --market:    #e07b00;
+    --commercial:#c49a00;
+    --compet:    #1a6fb5;
+    --context:   #4a5568;
+    --font-h:    'Syne', sans-serif;
+    --font-b:    'Libre Franklin', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: var(--font-b); background: var(--bg); color: var(--ink); display: flex; min-height: 100vh; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+    width: var(--sidebar-w);
+    background: var(--ink);
+    position: fixed; top: 0; left: 0; bottom: 0;
+    display: flex; flex-direction: column;
+    overflow-y: auto; z-index: 200;
+}
+.sidebar-brand {
+    padding: 24px 20px 18px;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+.brand-eyebrow {
+    font-family: var(--font-h);
+    font-size: 9px; font-weight: 700;
+    letter-spacing: 2.5px; text-transform: uppercase;
+    color: var(--priority); margin-bottom: 5px;
+}
+.brand-name {
+    font-family: var(--font-h);
+    font-size: 16px; font-weight: 800; color: white; line-height: 1.25;
+}
+.brand-sub { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 3px; font-weight: 300; }
+
+.nav-group-label {
+    font-size: 9px; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: rgba(255,255,255,0.2);
+    padding: 14px 20px 5px;
+}
+.nav-item {
+    display: flex; align-items: center; gap: 9px;
+    padding: 8px 20px;
+    color: rgba(255,255,255,0.55); font-size: 12px; font-weight: 400;
+    text-decoration: none;
+    border-left: 3px solid transparent;
+    transition: all 0.15s;
+}
+.nav-item:hover { color: white; background: rgba(255,255,255,0.04); border-left-color: var(--tier-color); }
+.nav-item.active { color: white; background: rgba(255,255,255,0.07); border-left-color: var(--tier-color); }
+.nav-icon { font-size: 13px; flex-shrink: 0; }
+.nav-label { flex: 1; line-height: 1.35; }
+.nav-count {
+    font-size: 10px; font-weight: 600;
+    background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.45);
+    padding: 1px 6px; border-radius: 8px;
+}
+.sidebar-footer {
+    margin-top: auto;
+    padding: 14px 20px;
+    border-top: 1px solid rgba(255,255,255,0.07);
+    font-size: 10px; color: rgba(255,255,255,0.2);
+    line-height: 1.9;
+}
+
+/* ── MAIN ── */
+.main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; }
+
+/* ── TOPBAR ── */
+.topbar {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    padding: 18px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+}
+.topbar-title {
+    font-family: var(--font-h); font-size: 18px; font-weight: 700; color: var(--ink);
+}
+.topbar-sub { font-size: 11px; color: var(--muted); margin-top: 2px; font-weight: 300; }
+.topbar-stats { display: flex; gap: 20px; align-items: center; }
+.stat { text-align: right; }
+.stat-num {
+    font-family: var(--font-h); font-size: 20px; font-weight: 700;
+    color: var(--ink); line-height: 1;
+}
+.stat-num.red { color: var(--priority); }
+.stat-num.amber { color: var(--commercial); }
+.stat-lbl { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
+.stat-divider { width: 1px; height: 32px; background: var(--border); }
+
+/* ── FILTER BAR ── */
+.filter-bar {
+    background: #fafbff;
+    border-bottom: 1px solid var(--border);
+    padding: 10px 32px;
+    display: flex; align-items: center; gap: 8px;
+}
+.filter-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-right: 4px; }
+.fbtn {
+    padding: 4px 12px; border-radius: 14px;
+    border: 1px solid var(--border);
+    background: var(--white); color: var(--muted);
+    font-family: var(--font-b); font-size: 11px; font-weight: 500;
+    cursor: pointer; transition: all 0.15s;
+}
+.fbtn:hover { border-color: var(--ink-3); color: var(--ink); }
+.fbtn.active { background: var(--ink); border-color: var(--ink); color: white; }
+
+/* ── CONTENT ── */
+.content { padding: 28px 32px 60px; }
+
+/* ── SECTION ── */
+.digest-section { margin-bottom: 44px; scroll-margin-top: 100px; }
+.section-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 18px;
+    background: var(--white);
+    border-radius: 10px 10px 0 0;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--tier-bar);
+    margin-bottom: 0;
+}
+.section-header-left { display: flex; align-items: center; gap: 10px; }
+.section-icon { font-size: 18px; }
+.section-title {
+    font-family: var(--font-h); font-size: 14px; font-weight: 700;
+    color: var(--ink); letter-spacing: 0.2px;
+}
+.section-header-right { display: flex; align-items: center; gap: 10px; }
+.tier-badge {
+    font-size: 9px; font-weight: 700; letter-spacing: 1.5px;
+    text-transform: uppercase; color: white;
+    padding: 3px 8px; border-radius: 4px;
+}
+.section-count { font-size: 11px; color: var(--muted); font-weight: 500; }
+
+/* ── CARDS GRID ── */
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: 10px;
+    padding: 10px;
+    background: var(--border);
+    border-radius: 0 0 10px 10px;
+    border: 1px solid var(--border);
+    border-top: none;
+}
+
+/* ── CARD ── */
+.card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 15px;
+    display: flex; flex-direction: column; gap: 7px;
+    transition: box-shadow 0.15s, transform 0.15s;
+}
+.card:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    transform: translateY(-1px);
+}
+.card-priority {
+    border-left: 3px solid var(--priority);
+    background: #fffafa;
+}
+.card-flagged {
+    border-left: 3px solid var(--compet);
+    background: #f7faff;
+}
+
+/* ── CARD INTERNALS ── */
+.card-badges { display: flex; gap: 5px; flex-wrap: wrap; min-height: 0; }
+.card-badges:empty { display: none; }
+
+.notice-badge, .comp-badge {
+    font-size: 8px; font-weight: 700; letter-spacing: 1px;
+    text-transform: uppercase; color: white;
+    padding: 2px 6px; border-radius: 3px;
+}
+.comp-rival  { background: #8b1a1a; }
+.comp-partner { background: #1a4a7a; }
+
+.card-title {
+    font-family: var(--font-h);
+    font-size: 13px; font-weight: 600;
+    color: var(--ink); text-decoration: none;
+    line-height: 1.4; display: block;
+}
+.card-title:hover { color: var(--priority); }
+.card-meta { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--muted); }
+.card-source { font-weight: 500; }
+.card-dot { opacity: 0.4; }
+.card-summary { font-size: 11.5px; color: var(--ink-3); line-height: 1.55; font-weight: 300; }
+
+/* ── EMPTY ── */
+.empty-state {
+    grid-column: 1/-1;
+    font-size: 13px; color: var(--muted);
+    font-style: italic; padding: 20px;
+    text-align: center;
+}
+
+/* ── HIDDEN ── */
+.card.hidden { display: none !important; }
+.digest-section.hidden { display: none !important; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 800px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; }
+    .content { padding: 16px; }
+    .topbar { padding: 14px 16px; flex-wrap: wrap; gap: 12px; }
+    .filter-bar { padding: 10px 16px; flex-wrap: wrap; }
+    .cards-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<nav class="sidebar">
+    <div class="sidebar-brand">
+        <div class="brand-eyebrow">BD Intelligence · Esri UK</div>
+        <div class="brand-name">Public Safety<br>Digest</div>
+        <div class="brand-sub">UK Policing · Fire · Home Office · MoJ</div>
+    </div>
+    <div class="nav-group-label">Priority Accounts</div>
+        <a class="nav-item" href="#home-office" style="--tier-color:#c0392b">
+            <span class="nav-icon">🔴</span>
+            <span class="nav-label">Home Office & Border Security</span>
+            <span class="nav-count">20</span>
+        </a>
+        <a class="nav-item" href="#ministry-of-justice" style="--tier-color:#c0392b">
+            <span class="nav-icon">🔴</span>
+            <span class="nav-label">Ministry of Justice, HMCTS & HMPPS</span>
+            <span class="nav-count">20</span>
+        </a><div class="nav-group-label">Public Safety Market</div>
+        <a class="nav-item" href="#policing-npcc" style="--tier-color:#e07b00">
+            <span class="nav-icon">🟠</span>
+            <span class="nav-label">Policing – NPCC, Police.AI & Forces</span>
+            <span class="nav-count">20</span>
+        </a>
+        <a class="nav-item" href="#fire-rescue" style="--tier-color:#e07b00">
+            <span class="nav-icon">🟠</span>
+            <span class="nav-label">Fire & Rescue – NFCC & Services</span>
+            <span class="nav-count">20</span>
+        </a><div class="nav-group-label">Commercial Signals</div>
+        <a class="nav-item" href="#procurement" style="--tier-color:#c49a00">
+            <span class="nav-icon">🟡</span>
+            <span class="nav-label">Procurement & Commercial Signals</span>
+            <span class="nav-count">0</span>
+        </a><div class="nav-group-label">Competitive Intel</div>
+        <a class="nav-item" href="#competitor-intel" style="--tier-color:#1a6fb5">
+            <span class="nav-icon">🔵</span>
+            <span class="nav-label">Competitor & Partner Intelligence</span>
+            <span class="nav-count">5</span>
+        </a><div class="nav-group-label">Sector Context</div>
+        <a class="nav-item" href="#policy-parliament" style="--tier-color:#4a5568">
+            <span class="nav-icon">⚪</span>
+            <span class="nav-label">Policy, Parliament & Hansard</span>
+            <span class="nav-count">14</span>
+        </a>
+        <a class="nav-item" href="#geospatial-tech" style="--tier-color:#4a5568">
+            <span class="nav-icon">⚪</span>
+            <span class="nav-label">Geospatial & Technology News</span>
+            <span class="nav-count">20</span>
+        </a>
+    <div class="sidebar-footer">
+        Updated: 12 April 2026, 15:39<br>
+        Auto-generated · GitHub Actions<br>
+        Next update: Monday 07:00
+    </div>
+</nav>
+
+<div class="main">
+    <div class="topbar">
+        <div>
+            <div class="topbar-title">Weekly BD Intelligence Digest</div>
+            <div class="topbar-sub">w/c 12 April 2026 · UK Public Safety &amp; Geospatial</div>
+        </div>
+        <div class="topbar-stats">
+            <div class="stat">
+                <div class="stat-num red">40</div>
+                <div class="stat-lbl">Priority</div>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat">
+                <div class="stat-num amber">0</div>
+                <div class="stat-lbl">Commercial</div>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat">
+                <div class="stat-num">119</div>
+                <div class="stat-lbl">Total</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="filter-bar">
+        <span class="filter-label">Filter</span>
+        <button class="fbtn active" onclick="setFilter('all', this)">All items</button>
+        <button class="fbtn" onclick="setFilter('priority', this)">🔴 Priority accounts only</button>
+        <button class="fbtn" onclick="setFilter('commercial', this)">🟡 Commercial signals</button>
+        <button class="fbtn" onclick="setFilter('competitive', this)">🔵 Competitor intel</button>
+    </div>
+
+    <div class="content">
+        
+        <section class="digest-section" id="home-office">
+            <div class="section-header" style="--tier-bar:#c0392b">
+                <div class="section-header-left">
+                    <span class="section-icon">🔴</span>
+                    <h2 class="section-title">Home Office & Border Security</h2>
+                </div>
+                <div class="section-header-right">
+                    <span class="tier-badge" style="background:#c0392b">PRIORITY ACCOUNT</span>
+                    <span class="section-count">20 items</span>
+                </div>
+            </div>
+            <div class="cards-grid">
+                
+                <article class="card card-priority">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.govwire.co.uk/news/home-office/three-countries-to-take-back-illegal-migrants-after-visa-threat-g542473" target="_blank" rel="noopener">Three countries to take back illegal migrants after visa threat</a>
+                    <div class="card-meta">
+                        <span class="card-source">Home Office – GovWire</span>
+                        
+                    </div>
+                    <p class="card-summary">Illegal migrants and criminals from 3 African countries will be deported following a threat by the Home Secretary to shut down their visas to Britain. | Home Office.…</p>
+                </article>
+                <article class="card card-priority">
+                    <div class="card-badges"><span class="comp-badge comp-partner">SI / PARTNER</span></div>
+                    <a class="card-title" href="https://www.govwire.co.uk/news/home-office/government-leads-global-fight-against-deepfake-threats-g528615" target="_blank" rel="noopener">Government leads global fight against deepfake threats</a>
+                    <div class="card-meta">
+                        <span class="card-source">Home Office – GovWire</span>
+                        
+                    </div>
+                    <p class="card-summary">Government collaborates with Microsoft and other world leading technology companies to create a framework which will identify gaps in deepfake detection. | Home Office.…</p>
+                </article>
+                <article class="card card-priority">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.govwire.co.uk/news/border-force/operation-to-tackle-fgm-and-forced-marriage-honoured-at-awards-g38391" target="_blank" rel="noopener">Operation to tackle FGM and forced marriage honoured at awards</a>
+                    <div class="card-meta">
+                        <span class="card-source">Border Force – GovWire</span>
+                        
+                    </div>
+                    <p class="card-summary">Border Force and Metropolitan Police operation highly commended at World Class Policing Awards | Border Force.…</p>
+                </article>
+                <article class="card card-priority">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.govwire.co.uk/news/border-force/huddersfield-trafficker-who-tried-to-escape-justice-has-jail-term-extended-g51018" target="_blank" rel="noopener">Huddersfield trafficker who tried to escape justice has jail term extended</a>
+                    <div class="card-meta">
+                        <span class="card-source">Border Force – GovWire</span>
+                        
+                    </div>
+                    <p class="card-summary">A human trafficker has had her jail term extended after she was caught by Border Force trying to sneak back into the country using her sisters passport. | Border Force.…</p>
+                </article>
+                <article class="card card-priority">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.govwire.co.uk/news/border-force/new-epassport-gates-opened-at-edinburgh-airport-g52731" target="_blank" rel="noopener">New ePassport gates opened at Edinburgh Airport</a>
+                    <div class="card-meta">
+                        <span class="card-source">Border Force – GovWire</span>
+                        
+                    </div>
+                    <p class="card-summary">Border Force trebled the number of ePassport gates allowing more opportunity to use this automated, fast and secure route through the border. | Border Force.…</p>
+                </article>
+                <article class="card card-priority">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.govwire.co.uk/news/uk-visas-and-immigration/uk-and-rwanda-strengthen-agreement-to-deal-with-global-migration-issues-g17174" target="_blank" rel="noopener">UK and Rwanda strengthen agreement to deal with global migration issues</a>
+                    <div class="card-meta">
+                        <span class="card-source">UK Visas & Immigration – GovWire</span>
+                        
+                    </div>
+                    <p class="card-summary">The Home Secretary hailed the strengthening of the partnership with Rwanda as both countries vow to step up efforts in dealing with global migration challenges. | UK Visas and Immigration.…</p>
+                </article>
+                <article class="card card-priority">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.govwire.co.uk/news/uk-visas-and-immigration/new-business-start-up-training-for-refugees-in-the-uk-g40221" target="_blank" rel="noopener">New business start-up training for refugees in the UK</a>
+                    <div class="card-meta">
+                        <span class="card-source">UK Visas & Immigration – GovWire</span>
+                        
+                    </div>
+                    <p class="card-summary">A pilot to encourage refugee entrepreneur programmes across the UK has been announced. | UK Visas and Immigration.…</p>
+                </article>
+                <article class="card card-priority">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.govwire.co.uk/news/uk-visas-and-immigration/life-in-the-uk-test-contract-awarded-g40336" target="_blank" rel="noopener">Life in the UK test contract awarded</a>
+                    <div class="card-meta">
+                        <span class="card-source">UK Visas & Immigration – GovWire</span>
+                        
+                    </div>
+                    <p class="card-summary">PSI Services has been awarded the Life in the UK contract by the Home Office, it was announced today. | UK Visas and Immigration.…</p>
+                </article>
+                <article class="card card-priority">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.govwire.co.uk/news/uk-visas-and-immigration/home-office-publishes-details-of-settlement-scheme-for-eu-citizens-g47316" target="_blank" rel="noopener">Home Office publishes details of settlement scheme for EU citizens</a>
+                    <div class="card-meta">
+                        <span class="card-source">UK Visas & Immigration – GovWire</span>
+                        
+                    </div>
+                    <p class="card-summary">EU citizens will be able to apply for settled status in 3 easy steps for less than the price of a passport, under plans outlined by the Immigration Minister. | UK Visas and Immigration.…</p>
+                </article>
+                <article class="card card-priority">
+                    <div class="card-badges"><span class="comp-badge comp-partner">SI / PARTNER</span></div>
+                    <a class="card-title" href="https://www.govwire.co.uk/news/uk-visas-and-immigration/sopra-steria-has-been-awarded-a-new-ukvi-contract-g47979" target="_blank" rel="noopener">Sopra Steria has been awarded a new UKVI contract</a>
+                    <div class="card-meta">
+                        <span class="card-source">UK Visas & Immigration – GovWire</span>
+                        
+                    </div>
+                    <p class="card-summary">Sopra Steria has been awarded the contract to deliver a new service for people applying for a work or study visa, settlement or citizenship from within the UK. | UK Visas and Immigration.…</p>
+                </article>
+                <article class="card card-priority">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.govwire.co.uk/news/uk-visas-and-immigration/restrictions-on-croatian-workers-to-expire-in-june-g49073" target="_blank" rel="noopener">Restrictions on Croatian workers to expire in June</a>
+                    <div class="card-meta">
+                        <span class="card-source">UK Visas & Immigration – GovWire</span>
+                        
+                    </div>
+                    <p class="card-summary">The current registration requirements for Croatian workers will expire on 30 June bringing their rights to work in Britain in line with other EU citizens. | UK Visas and Immigration.…</p>
+                </article>
+                <article class="card card-priority">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.govwire.co.uk/news/uk-visas-and-immigration/advice-services-for-asylum-seekers-and-refugees-contract-change-g76110" target="_blank" rel="noopener">Advice services for asylum seekers and refugees: contract change</a>
+                    <div class="card-meta">
+                        <span class="card-source">UK Visas & Immigration – GovWire</span>
+                        
+                    </div>
+                    <p class="card-summary">From 1 April 2014, the British Refugee Council and Migrant Helpline will provide advice services to asylum seekers and refugees. | UK Visas and Immigration.…</p>
+                </article>
+                <article class="card card-priority">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.govwire.co.uk/news/uk-visas-and-immigration/uk-electronic-visa-waiver-introduced-for-oman-qatar-and-uae-g77140" target="_blank" rel="noopener">UK electronic visa waiver introduced for Oman, Qatar and UAE</a>
+                    <div class="card-meta">
+                        <span class="card-source">UK Visas & Immigration – GovWire</span>
+                        
+                    </div>
+                    <p class="card-summary">From 1 January 2014 passport holders of Oman, Qatar and United Arab Emirates can visit the UK for up to 6 months with an electronic visa waiver. | UK Visas and Immigration.…</p>
+                </article>
+                <article class="card card-priority">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.govwire.co.uk/news/independent-chief-inspector-of-borders-and-immigration-/inspection-report-published-an-inspection-of-the-border-force-operation-to-deter-and-detect-clandestine-entrants-to-the-uk-august-2024-november-2024-g4937" target="_blank" rel="noopener">Inspection report published: An inspection of the Border Force operation to deter and detect clandestine entrants to the UK August 2024  November 2024</a>
+                    <div class="card-meta">
+                        <span class="card-source">Independent Chief Inspector Borders</span>
+                        
+                    </div>
+                    <p class="card-summary">This inspection examined the Border Force operation to deter and detect clandestine entrants at the juxtaposed controls in northern France (Calais, Coquelles, and Dunkerque), focusing on how efficiently and effectively staff resources and d…</p>
+                </article>
+                <article class="card card-priority">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.gov.uk/government/news/new-funding-to-expand-specialist-patrols" target="_blank" rel="noopener">New funding to expand specialist patrols</a>
+                    <div class="card-meta">
+                        <span class="card-source">Home Office – GOV.UK News</span>
+                        <span class="card-dot">·</span><span class="card-date">10 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">£5 million funding boost to increase deployment of highly trained officers to identify and disrupt criminals and terrorists in key public spaces.…</p>
+                </article>
+                <article class="card card-priority">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.govwire.co.uk/news/home-office/new-funding-to-expand-specialist-patrols-g1438298" target="_blank" rel="noopener">New funding to expand specialist patrols</a>
+                    <div class="card-meta">
+                        <span class="card-source">Home Office – GovWire</span>
+                        
+                    </div>
+                    <p class="card-summary">5 million funding boost to increase deployment of highly trained officers to identify and disrupt criminals and terrorists in key public spaces. | Home Office.…</p>
+                </article>
+                <article class="card card-priority">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.govwire.co.uk/news/home-office/asylum-handouts-and-accommodation-removed-for-illegal-migrants-abusing-britains-generosity-g934235" target="_blank" rel="noopener">Asylum handouts and accommodation removed for illegal migrants abusing Britains generosity</a>
+                    <div class="card-meta">
+                        <span class="card-source">Home Office – GovWire</span>
+                        
+                    </div>
+                    <p class="card-summary">Stricter conditions for migrants receiving asylum support will create a fairer, compliance-based system thats better for the British taxpayer. | Home Office.…</p>
+                </article>
+                <article class="card card-priority">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.govwire.co.uk/news/home-office/over-370-million-saved-in-crackdown-on-asylum-claims-by-tourists-g934237" target="_blank" rel="noopener">Over 370 million saved in crackdown on asylum claims by tourists</a>
+                    <div class="card-meta">
+                        <span class="card-source">Home Office – GovWire</span>
+                        
+                    </div>
+                    <p class="card-summary">Almost 400millionhas been saved in asylum accommodation and support costs after a crackdown on tourists abusing the UKs immigration system. | Home Office.…</p>
+                </article>
+                <article class="card card-priority">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.govwire.co.uk/news/home-office/refugee-protection-to-be-reviewed-every-30-months-g883559" target="_blank" rel="noopener">Refugee protection to be reviewed every 30 months</a>
+                    <div class="card-meta">
+                        <span class="card-source">Home Office – GovWire</span>
+                        
+                    </div>
+                    <p class="card-summary">The refugee model will shift from permanent to temporary for those who claim asylum from 2 March. | Home Office.…</p>
+                </article>
+                <article class="card card-priority">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.govwire.co.uk/news/home-office/uk-enforces-digital-permission-to-travel-g796594" target="_blank" rel="noopener">UK enforces digital permission to travel</a>
+                    <div class="card-meta">
+                        <span class="card-source">Home Office – GovWire</span>
+                        
+                    </div>
+                    <p class="card-summary">From today (25 February), non-visa nationals will be barred from entering the UK without an Electronic Travel Authorisation (ETA) . | Home Office.…</p>
+                </article>
+            </div>
+        </section>
+        <section class="digest-section" id="ministry-of-justice">
+            <div class="section-header" style="--tier-bar:#c0392b">
+                <div class="section-header-left">
+                    <span class="section-icon">🔴</span>
+                    <h2 class="section-title">Ministry of Justice, HMCTS & HMPPS</h2>
+                </div>
+                <div class="section-header-right">
+                    <span class="tier-badge" style="background:#c0392b">PRIORITY ACCOUNT</span>
+                    <span class="section-count">20 items</span>
+                </div>
+            </div>
+            <div class="cards-grid">
+                
+                <article class="card card-priority">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.govwire.co.uk/news/ministry-of-justice/government-moves-to-protect-children-from-abusive-parents-through-new-courts-and-tribunals-bill-g975927" target="_blank" rel="noopener">Government moves to protect children from abusive parents through new Courts and Tribunals Bill</a>
+                    <div class="card-meta">
+                        <span class="card-source">Ministry of Justice – GovWire</span>
+                        
+                    </div>
+                    <p class="card-summary">Children will be better protected from abusive parents as the Government moves to abolish the presumption of parental involvement in the new Courts and Tribunal Bill  a landmark piece of legislation to fix the justice system after years of …</p>
+                </article>
+                <article class="card card-priority">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.govwire.co.uk/news/ministry-of-justice/landmark-bill-to-deliver-swifter-justice-for-victims-g809162" target="_blank" rel="noopener">Landmark bill to deliver swifter justice for victims</a>
+                    <div class="card-meta">
+                        <span class="card-source">Ministry of Justice – GovWire</span>
+                        
+                    </div>
+                    <p class="card-summary">Faster and fairer justice for victims is at the heart of the Courts and Tribunals bill | Ministry of Justice.…</p>
+                </article>
+                <article class="card card-priority">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.govwire.co.uk/news/ministry-of-justice/government-announces-plans-to-tag-thousands-of-extra-offenders-g1249457" target="_blank" rel="noopener">Government announces plans to tag thousands of extra offenders</a>
+                    <div class="card-meta">
+                        <span class="card-source">Ministry of Justice – GovWire</span>
+                        
+                    </div>
+                    <p class="card-summary">Thousands more criminals will be tagged alongside changes to supervision that will focus probation time on the offenders who pose the greatest risk. | Ministry of Justice.…</p>
+                </article>
+                <article class="card card-priority">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.govwire.co.uk/news/ministry-of-justice/apply-to-join-the-preventative-analytics-for-youth-justice-advisory-panel-g879415" target="_blank" rel="noopener">Apply to join the Preventative Analytics for Youth Justice Advisory Panel</a>
+                    <div class="card-meta">
+                        <span class="card-source">Ministry of Justice – GovWire</span>
+                        
+                    </div>
+                    <p class="card-summary">The Ministry of Justice is making a public call for volunteers to become members of an expert advisory panel on the use of machine learning and advanced analytics for aiding prevention in youth justice. | Ministry of Justice.…</p>
+                </article>
+                <article class="card card-priority">
+                    <div class="card-badges"><span class="comp-badge comp-partner">SI / PARTNER</span></div>
+                    <a class="card-title" href="https://www.govwire.co.uk/news/ministry-of-justice/we-are-calling-time-on-the-justice-system-of-the-past-g791383" target="_blank" rel="noopener">We are calling time on the justice system of the past</a>
+                    <div class="card-meta">
+                        <span class="card-source">Ministry of Justice – GovWire</span>
+                        
+                    </div>
+                    <p class="card-summary">Deputy Prime Minister Rt Hon David Lammy MP sets out his vision for the future of the courts at Microsofts AI tour. | Ministry of Justice.…</p>
+                </article>
+                <article class="card card-priority">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.govwire.co.uk/news/ministry-of-justice/highest-ever-courts-funding-deal-agreed-to-deliver-faster-fairer-justice-for-victims-g784668" target="_blank" rel="noopener">Highest ever courts funding deal agreed to deliver faster, fairer justice for victims</a>
+                    <div class="card-meta">
+                        <span class="card-source">Ministry of Justice – GovWire</span>
+                        
+                    </div>
+                    <p class="card-summary">Criminal Crown Courts in England and Wales will be funded to hear as many cases as possible next year to deliver faster and fairer justice for victims. | Ministry of Justice.…</p>
+                </article>
+                <article class="card card-priority">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.govwire.co.uk/news/ministry-of-justice/prisons-and-probation-ombudsman-reappointment-g604529" target="_blank" rel="noopener">Prisons and Probation Ombudsman reappointment</a>
+                    <div class="card-meta">
+                        <span class="card-source">Ministry of Justice – GovWire</span>
+                        
+                    </div>
+                    <p class="card-summary">The Lord Chancellor has approved the reappointment of Adrian Usher as Prisons and Probation Ombudsman. | Ministry of Justice.…</p>
+                </article>
+                <article class="card card-priority">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.govwire.co.uk/news/ministry-of-justice/new-prison-houseblocksunder-construction-to-keep-streets-safe-g497815" target="_blank" rel="noopener">New prison houseblocksunder construction to keep streets safe</a>
+                    <div class="card-meta">
+                        <span class="card-source">Ministry of Justice – GovWire</span>
+                        
+                    </div>
+                    <p class="card-summary">HMP Northumberlandwillgain four new houseblocks, boosting its capacity by240places,in the latest Government step to make streets safer. | Ministry of Justice.…</p>
+                </article>
+                <article class="card card-priority">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.govwire.co.uk/news/ministry-of-justice/uk-marks-first-anniversary-of-100-year-partnership-in-kyiv-with-new-backing-for-reform-and-reconstruction-g231317" target="_blank" rel="noopener">UK marks first anniversary of 100 Year Partnership in Kyiv with new backing for reform and reconstruction</a>
+                    <div class="card-meta">
+                        <span class="card-source">Ministry of Justice – GovWire</span>
+                        
+                    </div>
+                    <p class="card-summary">The UK is stepping up its support for Ukraine as both countries mark the first anniversary of the landmark 100 Year Partnership. | Ministry of Justice.…</p>
+                </article>
+                <article class="card card-priority">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.govwire.co.uk/news/ministry-of-justice/battlefield-tactics-to-inspire-uk-fight-against-prison-drones-g231583" target="_blank" rel="noopener">Battlefield tactics to inspire UK fight against prison drones</a>
+                    <div class="card-meta">
+                        <span class="card-source">Ministry of Justice – GovWire</span>
+                        
+                    </div>
+                    <p class="card-summary">The Deputy Prime Minister has tasked the Ministry of Justice to learn from Ukraines expertise, to harness their wartime innovation and tackle prison drones. | Ministry of Justice.…</p>
+                </article>
+                <article class="card card-priority">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.govwire.co.uk/news/ministry-of-justice/immediate-action-to-improve-hmp-swaleside-g205051" target="_blank" rel="noopener">Immediate action to improve HMP Swaleside</a>
+                    <div class="card-meta">
+                        <span class="card-source">Ministry of Justice – GovWire</span>
+                        
+                    </div>
+                    <p class="card-summary">Extra specialist staff, improved training for frontline officers and bolstered anti-drone measures will be deployed at HMP Swaleside as part of Government action to urgently turn the prison around. | Ministry of Justice.…</p>
+                </article>
+                <article class="card card-priority">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.govwire.co.uk/news/ministry-of-justice/appointment-of-a-new-chair-to-the-independent-advisory-panel-on-deaths-in-custody-g1431908" target="_blank" rel="noopener">Appointment of a new Chair to the Independent Advisory Panel on Deaths in Custody</a>
+                    <div class="card-meta">
+                        <span class="card-source">Ministry of Justice – GovWire</span>
+                        
+                    </div>
+                    <p class="card-summary">The Deputy Prime Minister and Lord Chancellor has approved the appointment of Wendy Sinclair-Gieben as Chair of the Independent Advisory Panel on Deaths in Custody. | Ministry of Justice.…</p>
+                </article>
+                <article class="card card-priority">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.govwire.co.uk/news/ministry-of-justice/appointment-and-reappointment-of-non-executive-directors-to-the-departmental-board-g1346112" target="_blank" rel="noopener">Appointment and reappointment of Non-Executive Directors to the Departmental Board</a>
+                    <div class="card-meta">
+                        <span class="card-source">Ministry of Justice – GovWire</span>
+                        
+                    </div>
+                    <p class="card-summary">The Lord Chancellor and Deputy Prime Minister has reappointed Jennifer Rademaker as Non-Executive Director and appointed Gurpreet Dehal as Non-Executive Director to the Departmental Board and ARAC Chair. | Ministry of Justice.…</p>
+                </article>
+                <article class="card card-priority">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.govwire.co.uk/news/ministry-of-justice/preventing-the-drivers-of-youth-custody-g1283334" target="_blank" rel="noopener">Preventing the drivers of youth custody</a>
+                    <div class="card-meta">
+                        <span class="card-source">Ministry of Justice – GovWire</span>
+                        
+                    </div>
+                    <p class="card-summary">Minister for Sentencing, Youth Justice and International, Jake Richards, speaks about the drivers of youth custody and the future of youth courts. | Ministry of Justice.…</p>
+                </article>
+                <article class="card card-priority">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.govwire.co.uk/news/ministry-of-justice/longer-behind-bars-for-espionage-in-national-security-boost-g1281453" target="_blank" rel="noopener">Longer behind bars for espionage in national security boost</a>
+                    <div class="card-meta">
+                        <span class="card-source">Ministry of Justice – GovWire</span>
+                        
+                    </div>
+                    <p class="card-summary">Offenders posing a threat to national security to spend longer behind bars | Ministry of Justice.…</p>
+                </article>
+                <article class="card card-priority">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.govwire.co.uk/news/ministry-of-justice/lord-justice-of-appeal-appointed-as-a-senior-judicial-commissioner-of-the-judicial-appointments-commission-g1249473" target="_blank" rel="noopener">Lord Justice of Appeal appointed as a Senior Judicial Commissioner of the Judicial Appointments Commission</a>
+                    <div class="card-meta">
+                        <span class="card-source">Ministry of Justice – GovWire</span>
+                        
+                    </div>
+                    <p class="card-summary">His Majesty The King, on the advice of the Lord Chancellor, has approved the appointment of a Lord Justice of Appeal to serve as a Senior Judicial Commissioner and Vice-Chairman of the Judicial Appointments Commission. | Ministry of Justice…</p>
+                </article>
+                <article class="card card-priority">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.govwire.co.uk/news/ministry-of-justice/judicial-pension-board-appointment-of-an-independent-member-g1249475" target="_blank" rel="noopener">Judicial Pension Board appointment of an independent member</a>
+                    <div class="card-meta">
+                        <span class="card-source">Ministry of Justice – GovWire</span>
+                        
+                    </div>
+                    <p class="card-summary">The Lord Chancellor has approved the appointment, by the Chair of the Judicial Pension Board, of Tim Mpofu as an independent member. | Ministry of Justice.…</p>
+                </article>
+                <article class="card card-priority">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.govwire.co.uk/news/ministry-of-justice/children-to-get-swifter-justice-as-new-family-court-approach-expands-nationally-g1135639" target="_blank" rel="noopener">Children to get swifter justice as new family court approach expands nationally</a>
+                    <div class="card-meta">
+                        <span class="card-source">Ministry of Justice – GovWire</span>
+                        
+                    </div>
+                    <p class="card-summary">The newly named Child Focused Courts will be rolled out across England and Wales, following a particularly successful pilot which saw cases in the family court resolved seven and a half months quicker. | Ministry of Justice.…</p>
+                </article>
+                <article class="card card-priority">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.govwire.co.uk/news/ministry-of-justice/preferred-candidate-for-chair-of-the-legal-services-board-g1049332" target="_blank" rel="noopener">Preferred candidate for Chair of the Legal Services Board</a>
+                    <div class="card-meta">
+                        <span class="card-source">Ministry of Justice – GovWire</span>
+                        
+                    </div>
+                    <p class="card-summary">Minister Sackman has confirmed Monisha Shah is the preferred candidate for the role of Chair of the Legal Services Board. | Ministry of Justice.…</p>
+                </article>
+                <article class="card card-priority">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.govwire.co.uk/news/ministry-of-justice/government-launches-new-national-legal-advisors-service-for-rape-victims-and-expands-operation-soteria-into-the-courtroom-g1010454" target="_blank" rel="noopener">Government launches new national Legal Advisors service for rape victims and expands Operation Soteria into the courtroom</a>
+                    <div class="card-meta">
+                        <span class="card-source">Ministry of Justice – GovWire</span>
+                        
+                    </div>
+                    <p class="card-summary">Rape victims will have access to dedicated legal advice throughout the criminal justice process, while new project will look at shifting the focus of rape court cases from the victim to the perpetrator. | Ministry of Justice.…</p>
+                </article>
+            </div>
+        </section>
+        <section class="digest-section" id="policing-npcc">
+            <div class="section-header" style="--tier-bar:#e07b00">
+                <div class="section-header-left">
+                    <span class="section-icon">🟠</span>
+                    <h2 class="section-title">Policing – NPCC, Police.AI & Forces</h2>
+                </div>
+                <div class="section-header-right">
+                    <span class="tier-badge" style="background:#e07b00">PUBLIC SAFETY MARKET</span>
+                    <span class="section-count">20 items</span>
+                </div>
+            </div>
+            <div class="cards-grid">
+                
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.gov.uk/government/news/knife-crime-hotspots-to-see-surge-in-police-operations" target="_blank" rel="noopener">Knife crime hotspots to see surge in police operations</a>
+                    <div class="card-meta">
+                        <span class="card-source">GOV.UK – Policing</span>
+                        <span class="card-dot">·</span><span class="card-date">9 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">High knife crime hotspots to see surge in police patrols, knife arches and Live Facial Recognition to catch perpetrators.…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.gov.uk/government/news/pm-call-with-the-sultan-of-oman-12-april-2026" target="_blank" rel="noopener">PM call with the Sultan of Oman: 12 April 2026</a>
+                    <div class="card-meta">
+                        <span class="card-source">GOV.UK – Policing</span>
+                        <span class="card-dot">·</span><span class="card-date">12 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">The Prime Minister spoke to the Sultan of Oman, His Majesty Sultan Haitham bin Tarik al Said, this morning.…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.gov.uk/government/speeches/minister-for-armed-forces-speech-at-the-london-defence-conference" target="_blank" rel="noopener">Minister for Armed Forces speech at the London Defence Conference</a>
+                    <div class="card-meta">
+                        <span class="card-source">GOV.UK – Policing</span>
+                        <span class="card-dot">·</span><span class="card-date">11 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">The Minister for Armed Forces delivered a closing speech at the London Defence Conference.…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.gov.uk/government/news/new-funding-to-expand-specialist-patrols" target="_blank" rel="noopener">New funding to expand specialist patrols</a>
+                    <div class="card-meta">
+                        <span class="card-source">GOV.UK – Policing</span>
+                        <span class="card-dot">·</span><span class="card-date">10 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">£5 million funding boost to increase deployment of highly trained officers to identify and disrupt criminals and terrorists in key public spaces.…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.gov.uk/government/news/ukef-secures-128-million-submarine-rescue-deals-with-indonesia-boosting-british-industry" target="_blank" rel="noopener">UKEF secures £128 million submarine rescue deals with Indonesia, boosting British industry</a>
+                    <div class="card-meta">
+                        <span class="card-source">GOV.UK – Policing</span>
+                        <span class="card-dot">·</span><span class="card-date">10 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">UK Export Finance announces support for British businesses to export submarine technology to Indonesia.……</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.gov.uk/government/news/uk-considers-ban-on-owning-signal-jamming-devices-used-by-car-thieves-and-shoplifters" target="_blank" rel="noopener">UK considers ban on owning signal jamming devices used by car thieves and shoplifters</a>
+                    <div class="card-meta">
+                        <span class="card-source">GOV.UK – Policing</span>
+                        <span class="card-dot">·</span><span class="card-date">9 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">The UK government is considering tougher measures against criminals exploiting gadgets designed to hack doorbells and vehicle tracking systems.…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.gov.uk/government/news/government-chemist-conference-23-24-june-2026-registration-open" target="_blank" rel="noopener">Government Chemist Conference: 23-24 June 2026- registration open</a>
+                    <div class="card-meta">
+                        <span class="card-source">GOV.UK – Policing</span>
+                        <span class="card-dot">·</span><span class="card-date">9 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">Registration open for the Government Chemist Conference 2026: safe food for tomorrow's world- evidence-based measurement solutions for responsible regulation.…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.gov.uk/government/news/50-million-boost-for-defence-businesses-in-plymouth-and-the-south-west-with-new-defence-growth-deal" target="_blank" rel="noopener">£50 million boost for defence businesses in Plymouth and the South West with new defence growth deal</a>
+                    <div class="card-meta">
+                        <span class="card-source">GOV.UK – Policing</span>
+                        <span class="card-dot">·</span><span class="card-date">9 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">New defence investment will help defence businesses grow, by cutting red tape and creating hundreds of well-paid jobs, showing how defence is an engine for growth.…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.gov.uk/government/news/nhs-experts-deployed-to-tackle-corridor-care" target="_blank" rel="noopener">NHS experts deployed to tackle corridor care</a>
+                    <div class="card-meta">
+                        <span class="card-source">NDAO – GOV.UK</span>
+                        <span class="card-dot">·</span><span class="card-date">11 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">NHS deploys specialist teams and expands urgent care services to tackle corridor care, cut waits and ease A&amp;E pressure, targeting worst-affected trusts.…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.gov.uk/government/speeches/minister-for-armed-forces-speech-at-the-london-defence-conference" target="_blank" rel="noopener">Minister for Armed Forces speech at the London Defence Conference</a>
+                    <div class="card-meta">
+                        <span class="card-source">NDAO – GOV.UK</span>
+                        <span class="card-dot">·</span><span class="card-date">11 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">The Minister for Armed Forces delivered a closing speech at the London Defence Conference.…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.gov.uk/government/news/new-funding-to-expand-specialist-patrols" target="_blank" rel="noopener">New funding to expand specialist patrols</a>
+                    <div class="card-meta">
+                        <span class="card-source">NDAO – GOV.UK</span>
+                        <span class="card-dot">·</span><span class="card-date">10 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">£5 million funding boost to increase deployment of highly trained officers to identify and disrupt criminals and terrorists in key public spaces.……</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.gov.uk/government/news/his-majestys-lord-lieutenant-certificates-of-merit-awards-2027-to-2028" target="_blank" rel="noopener">His Majesty’s Lord-Lieutenant Certificates of Merit awards 2027 to 2028</a>
+                    <div class="card-meta">
+                        <span class="card-source">NDAO – GOV.UK</span>
+                        <span class="card-dot">·</span><span class="card-date">10 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">Nominations are open for His Majesty’s Lord-Lieutenant Certificate of Merit awards 2027 and 2028.…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.gov.uk/government/news/ukef-secures-128-million-submarine-rescue-deals-with-indonesia-boosting-british-industry" target="_blank" rel="noopener">UKEF secures £128 million submarine rescue deals with Indonesia, boosting British industry</a>
+                    <div class="card-meta">
+                        <span class="card-source">NDAO – GOV.UK</span>
+                        <span class="card-dot">·</span><span class="card-date">10 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">UK Export Finance announces support for British businesses to export submarine technology to Indonesia.…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.gov.uk/government/news/vacancy-inspector-of-air-accidents-engineering-closing-3-may-2026" target="_blank" rel="noopener">Vacancy: Inspector of Air Accidents (Engineering) – closing 3 May 2026</a>
+                    <div class="card-meta">
+                        <span class="card-source">NDAO – GOV.UK</span>
+                        <span class="card-dot">·</span><span class="card-date">10 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">The Air Accidents Investigation Branch is recruiting for an Inspector of Air Accidents (Engineering)…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.gov.uk/government/news/uk-start-up-to-supply-interceptor-missiles-to-uk-military-and-gulf-partners" target="_blank" rel="noopener">UK start-up to supply interceptor missiles to UK military and Gulf partners</a>
+                    <div class="card-meta">
+                        <span class="card-source">NDAO – GOV.UK</span>
+                        <span class="card-dot">·</span><span class="card-date">10 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">Defence Secretary announces Cambridge Aerospace set to supply new interceptor missiles - known as 'Skyhammer' and launchers to the UK Armed Forces and Gulf partners.…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.gov.uk/government/news/uk-considers-ban-on-owning-signal-jamming-devices-used-by-car-thieves-and-shoplifters" target="_blank" rel="noopener">UK considers ban on owning signal jamming devices used by car thieves and shoplifters</a>
+                    <div class="card-meta">
+                        <span class="card-source">NDAO – GOV.UK</span>
+                        <span class="card-dot">·</span><span class="card-date">9 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">The UK government is considering tougher measures against criminals exploiting gadgets designed to hack doorbells and vehicle tracking systems.…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.gov.uk/government/news/space-worms-uk-scientists-launch-microscopic-crew-into-orbit-to-support-future-moon-missions" target="_blank" rel="noopener">Space Worms! UK scientists launch microscopic crew into orbit to support future Moon missions</a>
+                    <div class="card-meta">
+                        <span class="card-source">GOV.UK – Policing</span>
+                        <span class="card-dot">·</span><span class="card-date">11 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">British scientists have launched a crew of microscopic worms to the International Space Station in a pioneering experiment that could help unlock the secrets of long-duration space travel - and support ambitions to reach the……</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.gov.uk/government/publications/letter-from-the-security-minister-to-the-interim-independent-prevent-commissioner" target="_blank" rel="noopener">Letter from the Security Minister to the Interim Independent Prevent Commissioner</a>
+                    <div class="card-meta">
+                        <span class="card-source">GOV.UK – Policing</span>
+                        <span class="card-dot">·</span><span class="card-date">10 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">'Thank you' letter from the Security Minister, Dan Jarvis, to the Interim Independent Prevent Commissioner, Lord Anderson.…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.gov.uk/government/news/new-laws-to-crackdown-on-harmful-pornography" target="_blank" rel="noopener">New laws to crackdown on harmful pornography</a>
+                    <div class="card-meta">
+                        <span class="card-source">GOV.UK – Policing</span>
+                        <span class="card-dot">·</span><span class="card-date">10 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">Possessing or publishing pornography depicting incest or adults pretending to be children to be criminalised and tech execs could be held liable.…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.gov.uk/government/publications/commissioners-end-of-tenure-letter" target="_blank" rel="noopener">Commissioner's end of tenure letter</a>
+                    <div class="card-meta">
+                        <span class="card-source">GOV.UK – Policing</span>
+                        <span class="card-dot">·</span><span class="card-date">10 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">Letter from Lord Anderson, the Interim Independent Prevent Commissioner, to Dan Jarvis, the Security Minister.…</p>
+                </article>
+            </div>
+        </section>
+        <section class="digest-section" id="fire-rescue">
+            <div class="section-header" style="--tier-bar:#e07b00">
+                <div class="section-header-left">
+                    <span class="section-icon">🟠</span>
+                    <h2 class="section-title">Fire & Rescue – NFCC & Services</h2>
+                </div>
+                <div class="section-header-right">
+                    <span class="tier-badge" style="background:#e07b00">PUBLIC SAFETY MARKET</span>
+                    <span class="section-count">20 items</span>
+                </div>
+            </div>
+            <div class="cards-grid">
+                
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://emergencyservicestimes.com/2026/04/10/welsh-fire-chief-on-why-on-call-firefighters-are-the-pillars-of-resilience/?utm_source=rss&utm_medium=rss&utm_campaign=welsh-fire-chief-on-why-on-call-firefighters-are-the-pillars-of-resilience" target="_blank" rel="noopener">Welsh fire chief on why on-call firefighters are the ‘pillars of resilience’</a>
+                    <div class="card-meta">
+                        <span class="card-source">Emergency Services Times</span>
+                        <span class="card-dot">·</span><span class="card-date">9 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">Craig Flannery, the relatively new chief of Mid and West Wales Fire and Rescue Service, talks to Catherine Levin for the latest episode of the podcast about how the on-call service is thriving against a backdrop of emerging threats and inno…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://emergencyservicestimes.com/2026/04/10/drones-and-robotics-take-centre-stage-in-the-next-phase-of-emergency-response/?utm_source=rss&utm_medium=rss&utm_campaign=drones-and-robotics-take-centre-stage-in-the-next-phase-of-emergency-response" target="_blank" rel="noopener">Drones and robotics take centre stage in the next phase of emergency response</a>
+                    <div class="card-meta">
+                        <span class="card-source">Emergency Services Times</span>
+                        <span class="card-dot">·</span><span class="card-date">9 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">As drones and robotics become more embedded in emergency response, the challenge is no longer what the technology can do, but how it is used safely and effectively. Events like The Emergency Services Show and The Emergency Tech Show are bri…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://emergencyservicestimes.com/2026/04/09/local-government-reorganisation-three-reasons-why-fire-leaders-should-care/?utm_source=rss&utm_medium=rss&utm_campaign=local-government-reorganisation-three-reasons-why-fire-leaders-should-care" target="_blank" rel="noopener">Local government reorganisation: three reasons why fire leaders should care</a>
+                    <div class="card-meta">
+                        <span class="card-source">Emergency Services Times</span>
+                        <span class="card-dot">·</span><span class="card-date">8 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">Ahead of local elections in May, NFCC Vice Chair Rick Hylton outlines the reasons why local government reorganisation should be part of all strategic leaders' conversations during this period of change. 
+The post Local government reorganisa…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.gov.uk/government/news/his-majestys-lord-lieutenant-certificates-of-merit-awards-2027-to-2028" target="_blank" rel="noopener">His Majesty’s Lord-Lieutenant Certificates of Merit awards 2027 to 2028</a>
+                    <div class="card-meta">
+                        <span class="card-source">GOV.UK – Fire & Rescue</span>
+                        <span class="card-dot">·</span><span class="card-date">10 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">Nominations are open for His Majesty’s Lord-Lieutenant Certificate of Merit awards 2027 and 2028.…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.gov.uk/government/news/ukef-secures-128-million-submarine-rescue-deals-with-indonesia-boosting-british-industry" target="_blank" rel="noopener">UKEF secures £128 million submarine rescue deals with Indonesia, boosting British industry</a>
+                    <div class="card-meta">
+                        <span class="card-source">GOV.UK – Fire & Rescue</span>
+                        <span class="card-dot">·</span><span class="card-date">10 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">UK Export Finance announces support for British businesses to export submarine technology to Indonesia.…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.gov.uk/government/news/ukef-secures-128-million-submarine-rescue-deals-with-indonesia-boosting-british-industry" target="_blank" rel="noopener">UKEF secures £128 million submarine rescue deals with Indonesia, boosting British industry</a>
+                    <div class="card-meta">
+                        <span class="card-source">GOV.UK – NFCC</span>
+                        <span class="card-dot">·</span><span class="card-date">10 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">UK Export Finance announces support for British businesses to export submarine technology to Indonesia.…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://emergencyservicestimes.com/2026/04/10/crime-prevention-work-gets-top-marks-in-humberside/?utm_source=rss&utm_medium=rss&utm_campaign=crime-prevention-work-gets-top-marks-in-humberside" target="_blank" rel="noopener">Crime prevention work gets top marks in Humberside</a>
+                    <div class="card-meta">
+                        <span class="card-source">Emergency Services Times</span>
+                        <span class="card-dot">·</span><span class="card-date">9 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">As part of Humberside Police's latest inspection, the force has been rated Outstanding for its work in preventing and deterring crime but needs to do more work when it comes to safeguarding children and adults.
+The post Crime prevention wor…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://emergencyservicestimes.com/2026/04/09/uk-isar-and-ukrainian-first-responders-train-together-in-merseyside/?utm_source=rss&utm_medium=rss&utm_campaign=uk-isar-and-ukrainian-first-responders-train-together-in-merseyside" target="_blank" rel="noopener">UK ISAR and Ukrainian first responders train together in Merseyside</a>
+                    <div class="card-meta">
+                        <span class="card-source">Emergency Services Times</span>
+                        <span class="card-dot">·</span><span class="card-date">8 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">First responders from Ukraine have taken part in training delivered by the UK's International Search and Rescue Team with a strong focus on boosting urban search and rescue techniques.
+The post UK ISAR and Ukrainian first responders train t…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://emergencyservicestimes.com/2026/04/09/nineteen-apac-partners-with-ems-asia-organisers-to-launch-the-emergency-services-show-asia/?utm_source=rss&utm_medium=rss&utm_campaign=nineteen-apac-partners-with-ems-asia-organisers-to-launch-the-emergency-services-show-asia" target="_blank" rel="noopener">Nineteen APAC partners with EMS Asia organisers to launch The Emergency Services Show Asia</a>
+                    <div class="card-meta">
+                        <span class="card-source">Emergency Services Times</span>
+                        <span class="card-dot">·</span><span class="card-date">8 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">Nineteen APAC and the College of Emergency Physicians have signed an agreement to co-locate the 8th EMS Asia with the inaugural Emergency Services Show Asia.
+The post Nineteen APAC partners with EMS Asia organisers to launch The Emergency S…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://emergencyservicestimes.com/2026/04/09/learnpro-group-acquires-rivr-to-enhance-its-immersive-learning-offer/?utm_source=rss&utm_medium=rss&utm_campaign=learnpro-group-acquires-rivr-to-enhance-its-immersive-learning-offer" target="_blank" rel="noopener">LearnPro Group acquires RiVR to enhance its immersive learning offer</a>
+                    <div class="card-meta">
+                        <span class="card-source">Emergency Services Times</span>
+                        <span class="card-dot">·</span><span class="card-date">8 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">LearnPro Group has announced the acquisition of key immersive training products and technologies from RiVR, marking a major expansion of the Group’s virtual reality learning capabilities across emergency services.
+The post LearnPro Group ac…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://emergencyservicestimes.com/2026/04/08/announcement-of-group-chair-to-lead-transition-of-ambulance-trusts/?utm_source=rss&utm_medium=rss&utm_campaign=announcement-of-group-chair-to-lead-transition-of-ambulance-trusts" target="_blank" rel="noopener">Announcement of Group Chair to lead transition of ambulance trusts</a>
+                    <div class="card-meta">
+                        <span class="card-source">Emergency Services Times</span>
+                        <span class="card-dot">·</span><span class="card-date">7 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">South Central Ambulance Service NHS Foundation Trust and South East Coast Ambulance Service NHS Foundation Trust have announced the appointment of Colin Dennis as the first Group Chair, providing unified non-executive leadership across both…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://emergencyservicestimes.com/2026/04/08/new-helicopter-bases-boost-summer-search-capability/?utm_source=rss&utm_medium=rss&utm_campaign=new-helicopter-bases-boost-summer-search-capability" target="_blank" rel="noopener">New helicopter bases boost summer search capability</a>
+                    <div class="card-meta">
+                        <span class="card-source">Emergency Services Times</span>
+                        <span class="card-dot">·</span><span class="card-date">7 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">As part of a wider £1.6bn investment in search and rescue aviation, HM Coastguard has opened two new search and rescue bases to support its response over the summer months.
+The post New helicopter bases boost summer search capability appear…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://emergencyservicestimes.com/2026/04/08/levc-rolls-out-lifesaving-bandage-kits-across-uk-taxi-network/?utm_source=rss&utm_medium=rss&utm_campaign=levc-rolls-out-lifesaving-bandage-kits-across-uk-taxi-network" target="_blank" rel="noopener">LEVC rolls out lifesaving bandage kits across UK taxi network</a>
+                    <div class="card-meta">
+                        <span class="card-source">Emergency Services Times</span>
+                        <span class="card-dot">·</span><span class="card-date">7 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">London EV Company (LEVC) has partnered with RAPAID Emergency Bandages to expand access to lifesaving first aid kits across the UK’s taxi network.
+The post LEVC rolls out lifesaving bandage kits across UK taxi network appeared first on Emerg…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.gov.uk/government/news/letter-to-bma-resident-doctors-committee" target="_blank" rel="noopener">Letter to BMA Resident Doctors Committee</a>
+                    <div class="card-meta">
+                        <span class="card-source">GOV.UK – Fire & Rescue</span>
+                        <span class="card-dot">·</span><span class="card-date">12 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">A letter from Health and Social Care Secretary Wes Streeting to the BMA Resident Doctors Committee.…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.gov.uk/government/news/pm-call-with-the-sultan-of-oman-12-april-2026" target="_blank" rel="noopener">PM call with the Sultan of Oman: 12 April 2026</a>
+                    <div class="card-meta">
+                        <span class="card-source">GOV.UK – Fire & Rescue</span>
+                        <span class="card-dot">·</span><span class="card-date">12 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">The Prime Minister spoke to the Sultan of Oman, His Majesty Sultan Haitham bin Tarik al Said, this morning.…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.gov.uk/government/news/nhs-experts-deployed-to-tackle-corridor-care" target="_blank" rel="noopener">NHS experts deployed to tackle corridor care</a>
+                    <div class="card-meta">
+                        <span class="card-source">GOV.UK – Fire & Rescue</span>
+                        <span class="card-dot">·</span><span class="card-date">11 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">NHS deploys specialist teams and expands urgent care services to tackle corridor care, cut waits and ease A&amp;E pressure, targeting worst-affected trusts.…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.gov.uk/government/speeches/minister-for-armed-forces-speech-at-the-london-defence-conference" target="_blank" rel="noopener">Minister for Armed Forces speech at the London Defence Conference</a>
+                    <div class="card-meta">
+                        <span class="card-source">GOV.UK – Fire & Rescue</span>
+                        <span class="card-dot">·</span><span class="card-date">11 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">The Minister for Armed Forces delivered a closing speech at the London Defence Conference.…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.gov.uk/government/news/bird-flu-avian-influenza-latest-situation-in-england" target="_blank" rel="noopener">Bird flu (avian influenza): latest situation in England</a>
+                    <div class="card-meta">
+                        <span class="card-source">GOV.UK – Fire & Rescue</span>
+                        <span class="card-dot">·</span><span class="card-date">11 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">Find out about the latest bird flu situation in England and guidance for bird keepers and the public.…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.gov.uk/government/news/united-utilities-guilty-plea-to-action-that-led-to-fish-deaths" target="_blank" rel="noopener">United Utilities guilty plea to action that led to fish deaths</a>
+                    <div class="card-meta">
+                        <span class="card-source">GOV.UK – Fire & Rescue</span>
+                        <span class="card-dot">·</span><span class="card-date">10 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">Following an Environment Agency investigation, United Utilities pleaded guilty to introducing thousands of fish into Bessy Brook, near Bolton, without a permit.…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.gov.uk/government/news/enforcement-appeal-submission-changes-coming-soon" target="_blank" rel="noopener">Enforcement appeal submission changes coming soon</a>
+                    <div class="card-meta">
+                        <span class="card-source">GOV.UK – Fire & Rescue</span>
+                        <span class="card-dot">·</span><span class="card-date">10 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">The Planning Inspectorate is making important changes to how enforcement appeals are submitted, with all planning and enforcement appeals must now be made via the Appeal a planning decision service.……</p>
+                </article>
+            </div>
+        </section>
+        <section class="digest-section" id="procurement">
+            <div class="section-header" style="--tier-bar:#c49a00">
+                <div class="section-header-left">
+                    <span class="section-icon">🟡</span>
+                    <h2 class="section-title">Procurement & Commercial Signals</h2>
+                </div>
+                <div class="section-header-right">
+                    <span class="tier-badge" style="background:#c49a00">COMMERCIAL INTELLIGENCE</span>
+                    <span class="section-count">0 items</span>
+                </div>
+            </div>
+            <div class="cards-grid">
+                <div class="empty-state">No new items found this week for this section.</div>
+            </div>
+        </section>
+        <section class="digest-section" id="competitor-intel">
+            <div class="section-header" style="--tier-bar:#1a6fb5">
+                <div class="section-header-left">
+                    <span class="section-icon">🔵</span>
+                    <h2 class="section-title">Competitor & Partner Intelligence</h2>
+                </div>
+                <div class="section-header-right">
+                    <span class="tier-badge" style="background:#1a6fb5">COMPETITIVE INTEL</span>
+                    <span class="section-count">5 items</span>
+                </div>
+            </div>
+            <div class="cards-grid">
+                
+                <article class="card card-flagged">
+                    <div class="card-badges"><span class="comp-badge comp-partner">SI / PARTNER</span></div>
+                    <a class="card-title" href="https://blog.palantir.com/frontend-engineering-at-palantir-plotlines-in-three-js-c0c47f310715?source=rss----3c87dc14372f---4" target="_blank" rel="noopener">Frontend Engineering at Palantir: Plotlines in Three.js</a>
+                    <div class="card-meta">
+                        <span class="card-source">Palantir Blog</span>
+                        <span class="card-dot">·</span><span class="card-date">7 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">About this SeriesFrontend engineering at Palantir goes far beyond building standard web apps. Our engineers design interfaces for mission-critical decision-making, build operational applications that translate insight to action, and create …</p>
+                </article>
+                <article class="card card-flagged">
+                    <div class="card-badges"><span class="comp-badge comp-partner">SI / PARTNER</span></div>
+                    <a class="card-title" href="https://blog.palantir.com/frontend-engineering-at-palantir-building-a-backend-less-cross-application-api-a40be7874ee5?source=rss----3c87dc14372f---4" target="_blank" rel="noopener">Frontend Engineering at Palantir: Building a Backend-less Cross-Application API</a>
+                    <div class="card-meta">
+                        <span class="card-source">Palantir Blog</span>
+                        <span class="card-dot">·</span><span class="card-date">6 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">About this SeriesFrontend engineering at Palantir goes far beyond building standard web apps. Our engineers design interfaces for mission-critical decision-making, build operational applications that translate insight to action, and create …</p>
+                </article>
+                <article class="card card-flagged">
+                    <div class="card-badges"><span class="comp-badge comp-partner">SI / PARTNER</span></div>
+                    <a class="card-title" href="https://www.microsoft.com/en-gb/industry/blog/cross-industry/2026/04/10/beyond-credentials-verifying-the-human/" target="_blank" rel="noopener">Beyond credentials. Verifying the human.</a>
+                    <div class="card-meta">
+                        <span class="card-source">Microsoft UK Public Sector</span>
+                        <span class="card-dot">·</span><span class="card-date">10 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">AI has fundamentally reshaped the enterprise attack surface, with workforce identity sitting at the centre of that shift. Despite significant investments in Zero Trust programmes, identity attacks are scaling. Help desk social engineering, …</p>
+                </article>
+                <article class="card card-flagged">
+                    <div class="card-badges"><span class="comp-badge comp-partner">SI / PARTNER</span></div>
+                    <a class="card-title" href="https://blog.palantir.com/osdk-and-mobile-applications-building-with-the-embedded-ontology-668432da6572?source=rss----3c87dc14372f---4" target="_blank" rel="noopener">OSDK and Mobile Applications: Building with the Embedded Ontology</a>
+                    <div class="card-meta">
+                        <span class="card-source">Palantir Blog</span>
+                        <span class="card-dot">·</span><span class="card-date">6 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">The Embedded Ontology lets you build powerful enterprise applications for teams that operate at the edge. Run the full, context-rich Ontology locally on the device. The power of Palantir, at the point of action.Traditional enterprise platfo…</p>
+                </article>
+                <article class="card card-flagged">
+                    <div class="card-badges"><span class="comp-badge comp-rival">COMPETITOR</span></div>
+                    <a class="card-title" href="https://1spatial.com/news-events/2020/1spatial-launch-new-global-website/" target="_blank" rel="noopener">1Spatial launch new global website</a>
+                    <div class="card-meta">
+                        <span class="card-source">1Spatial News</span>
+                        
+                    </div>
+                    
+                </article>
+            </div>
+        </section>
+        <section class="digest-section" id="policy-parliament">
+            <div class="section-header" style="--tier-bar:#4a5568">
+                <div class="section-header-left">
+                    <span class="section-icon">⚪</span>
+                    <h2 class="section-title">Policy, Parliament & Hansard</h2>
+                </div>
+                <div class="section-header-right">
+                    <span class="tier-badge" style="background:#4a5568">SECTOR CONTEXT</span>
+                    <span class="section-count">14 items</span>
+                </div>
+            </div>
+            <div class="cards-grid">
+                
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.publictechnology.net/2026/04/08/public-order-justice-and-rights/home-office-seeks-trio-of-100k-plus-leaders-to-support-police-tech-transformation/" target="_blank" rel="noopener">Home Office seeks trio of £100k-plus leaders to support police tech transformation</a>
+                    <div class="card-meta">
+                        <span class="card-source">Public Technology</span>
+                        <span class="card-dot">·</span><span class="card-date">8 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">Whitehall department is looking to fill three positions covering legacy upgrades, the rollout of a biometrics programme, and core IT services that support the operation of forces around the country [&#8230;]…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.publictechnology.net/2026/04/10/transport/dvsas-new-735m-theory-test-contracts-to-offer-option-to-explore-remote-testing/" target="_blank" rel="noopener">DVSA’s new £735m theory test contracts to offer option to ‘explore remote testing’</a>
+                    <div class="card-meta">
+                        <span class="card-source">Public Technology</span>
+                        <span class="card-dot">·</span><span class="card-date">10 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">A major deal expected to be awarded next summer will also incorporate the possibility of using additional cloud platforms, as well as supporting the planned delivery of digital driving licences [&#8230;]…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.gov.uk/government/news/uk-considers-ban-on-owning-signal-jamming-devices-used-by-car-thieves-and-shoplifters" target="_blank" rel="noopener">UK considers ban on owning signal jamming devices used by car thieves and shoplifters</a>
+                    <div class="card-meta">
+                        <span class="card-source">GOV.UK – DSIT</span>
+                        <span class="card-dot">·</span><span class="card-date">9 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">The UK government is considering tougher measures against criminals exploiting gadgets designed to hack doorbells and vehicle tracking systems.…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.gov.uk/government/news/government-announces-preferred-candidate-for-ofcom-chair" target="_blank" rel="noopener">Government announces preferred candidate for Ofcom Chair</a>
+                    <div class="card-meta">
+                        <span class="card-source">GOV.UK – DSIT</span>
+                        <span class="card-dot">·</span><span class="card-date">8 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">Sir Ian Cheshire named as preferred candidate for Ofcom Chair, subject to parliamentary hearing before final appointment is confirmed.…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.publictechnology.net/2026/04/10/society-and-welfare/government-pledges-local-conversations-and-events-to-encourage-participation-in-digital-id-consultation/" target="_blank" rel="noopener">Government pledges ‘local conversations and events to encourage participation’ in digital ID consultation</a>
+                    <div class="card-meta">
+                        <span class="card-source">Public Technology</span>
+                        <span class="card-dot">·</span><span class="card-date">10 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">In the face of questions about the how the feedback exercise will best encourage participation by those who might be digitally excluded, ministers have stressed the importance of physical gatherings [&#8230;]…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.publictechnology.net/2026/04/10/education-and-skills/dsit-launches-recruitment-for-two-more-dgs/" target="_blank" rel="noopener">DSIT launches recruitment for two more DGs</a>
+                    <div class="card-meta">
+                        <span class="card-source">Public Technology</span>
+                        <span class="card-dot">·</span><span class="card-date">10 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">The department has now commenced recruitment processes for four digital and tech leadership roles at the civil service’s second highest level, all of which have been created since last summer [&#8230;]…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.publictechnology.net/2026/04/09/economics-and-finance/making-tax-digital-hmrc-equality-review-finds-possible-minor-impacts-based-on-disability-age-and-religion/" target="_blank" rel="noopener">Making Tax Digital: HMRC equality review finds possible ‘minor impacts’ based on disability, age and religion</a>
+                    <div class="card-meta">
+                        <span class="card-source">Public Technology</span>
+                        <span class="card-dot">·</span><span class="card-date">9 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">Tax department has revealed the results of an initial ‘screening’ exercise, including a conclusion that a full assessment is not required, but that it will continue to monitor the situation [&#8230;]…</p>
+                </article>
+                <article class="card card-flagged">
+                    <div class="card-badges"><span class="comp-badge comp-partner">SI / PARTNER</span></div>
+                    <a class="card-title" href="https://www.publictechnology.net/2026/04/09/health-and-social-care/nhs-preps-for-large-scale-microsoft-procurement-with-50k-benchmarking-exercise/" target="_blank" rel="noopener">NHS preps for ‘large-scale’ Microsoft procurement with £50k benchmarking exercise</a>
+                    <div class="card-meta">
+                        <span class="card-source">Public Technology</span>
+                        <span class="card-dot">·</span><span class="card-date">9 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">As its current deal for core software concludes its initial term, and with a maximum of two years to replace it, the health service is seeking to build market intelligence [&#8230;]…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.publictechnology.net/2026/04/09/society-and-welfare/new-dwp-perm-sec-to-lead-use-of-ai-and-emerging-tech-to-transform-services/" target="_blank" rel="noopener">New DWP perm sec to lead use of ‘AI and emerging tech to transform services’</a>
+                    <div class="card-meta">
+                        <span class="card-source">Public Technology</span>
+                        <span class="card-dot">·</span><span class="card-date">9 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">The welfare department has launched its recruitment process for a new leader, after the incumbent head Sir Peter Schofield announced he would be stepping down after eight years in post [&#8230;]…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.publictechnology.net/2026/04/08/education-and-skills/scottish-body-flags-significant-challenge-and-huge-promise-of-ai/" target="_blank" rel="noopener">Scottish body flags ‘significant challenge and huge promise’ of AI for healthcare</a>
+                    <div class="card-meta">
+                        <span class="card-source">Public Technology</span>
+                        <span class="card-dot">·</span><span class="card-date">8 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">InnoScot Health, which has been operating for almost a quarter of a century supporting healthtech and other innovation, has responded to the Scottish Government’s recent AI strategy with cautious optimism [&#8230;]…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.publictechnology.net/2026/04/07/health-and-social-care/nhs-preps-major-tech-programme-to-transform-patient-public-and-staff-facing-services/" target="_blank" rel="noopener">NHS preps major tech programme to ‘transform patient, public and staff-facing services’</a>
+                    <div class="card-meta">
+                        <span class="card-source">Public Technology</span>
+                        <span class="card-dot">·</span><span class="card-date">7 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">Recently released health service transparency documents shine a light on a newly launched scheme that will incorporate existing reform initiatives, as part of a ‘much larger’ agenda of improving services [&#8230;]…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.gov.uk/government/news/new-laws-to-crackdown-on-harmful-pornography" target="_blank" rel="noopener">New laws to crackdown on harmful pornography</a>
+                    <div class="card-meta">
+                        <span class="card-source">GOV.UK – DSIT</span>
+                        <span class="card-dot">·</span><span class="card-date">10 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">Possessing or publishing pornography depicting incest or adults pretending to be children to be criminalised and tech execs could be held liable.…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.gov.uk/government/news/leading-quantum-nations-to-boost-cooperation-following-uk-summit" target="_blank" rel="noopener">Leading quantum nations to boost cooperation following UK summit</a>
+                    <div class="card-meta">
+                        <span class="card-source">GOV.UK – DSIT</span>
+                        <span class="card-dot">·</span><span class="card-date">8 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">Communique following the fifth meeting of the Quantum Development Group (QDG).…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.publictechnology.net/2026/04/08/education-and-skills/gds-run-spend-controls-retired-as-departments-to-fully-own-and-manage-their-own-approvals-processes/" target="_blank" rel="noopener">GDS-run spend controls retired as departments to ‘fully own and manage their own approvals processes’</a>
+                    <div class="card-meta">
+                        <span class="card-source">Public Technology</span>
+                        <span class="card-dot">·</span><span class="card-date">8 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">As of the start of this month, the centralised process through which expert evaluators formally greenlight departmental project plans has been discontinued and superseded by a model offering greater autonomy [&#8230;]…</p>
+                </article>
+            </div>
+        </section>
+        <section class="digest-section" id="geospatial-tech">
+            <div class="section-header" style="--tier-bar:#4a5568">
+                <div class="section-header-left">
+                    <span class="section-icon">⚪</span>
+                    <h2 class="section-title">Geospatial & Technology News</h2>
+                </div>
+                <div class="section-header-right">
+                    <span class="tier-badge" style="background:#4a5568">SECTOR CONTEXT</span>
+                    <span class="section-count">20 items</span>
+                </div>
+            </div>
+            <div class="cards-grid">
+                
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.gov.uk/government/news/science-training-strengthens-reporting-by-journalists-from-ghana-and-nigeria" target="_blank" rel="noopener">Science training strengthens reporting by journalists from Ghana and Nigeria</a>
+                    <div class="card-meta">
+                        <span class="card-source">Geospatial Commission – GOV.UK</span>
+                        <span class="card-dot">·</span><span class="card-date">9 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">Reporters from Ghana and Nigeria complete UK‑funded training at Imperial College, London to enhance evidence‑based storytelling and support policymaking.…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.bbc.com/news/articles/clyd032ej70o?at_medium=RSS&at_campaign=rss" target="_blank" rel="noopener">OpenAI pauses UK data centre deal over energy costs and regulation</a>
+                    <div class="card-meta">
+                        <span class="card-source">BBC Technology</span>
+                        <span class="card-dot">·</span><span class="card-date">9 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">The project was part of a package of tech investment promising the UK could become an AI superpower.…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.gov.uk/government/speeches/we-continue-to-call-on-kosovo-and-serbia-to-resolve-outstanding-disagreements-through-the-eu-facilitated-dialogue-uk-statement-at-the-un-security-coun" target="_blank" rel="noopener">We continue to call on Kosovo and Serbia to resolve outstanding disagreements through the EU-facilitated Dialogue: UK statement at the UN Security Council</a>
+                    <div class="card-meta">
+                        <span class="card-source">Geospatial Commission – GOV.UK</span>
+                        <span class="card-dot">·</span><span class="card-date">9 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">Statement by Jennifer MacNaughtan, UK Minister Counsellor, at the Security Council meeting on Kosovo.…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.gov.uk/government/news/joint-statement-on-the-conflict-in-the-middle-east-8-april-2026" target="_blank" rel="noopener">Joint Statement on the conflict in the Middle East: 8 April 2026</a>
+                    <div class="card-meta">
+                        <span class="card-source">Geospatial Commission – GOV.UK</span>
+                        <span class="card-dot">·</span><span class="card-date">9 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">…Minister Frostadóttir Prime Minister Jetten, Prime Minister Kristersson, Prime Minister Michal, Prime Minister Mitsotakis, Prime Minister Montenegro, Prime Minister Sanchez, Prime Minister Siliņa, Prime Minister Støre, President Stubb, Pri…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.gov.uk/government/news/mhra-expands-ai-airlock-programme-with-a-36-million-funding-boost-over-three-years" target="_blank" rel="noopener">MHRA expands AI Airlock programme with a £3.6 million funding boost over three years</a>
+                    <div class="card-meta">
+                        <span class="card-source">Geospatial Commission – GOV.UK</span>
+                        <span class="card-dot">·</span><span class="card-date">8 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">The MHRA continues to be at the forefront of innovation and secures multi-year funding to expand its pioneering AI Airlock programme.…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.gov.uk/government/news/regulator-finds-no-evidence-that-refugee-charity-engaged-in-inappropriate-activity" target="_blank" rel="noopener">Regulator finds no evidence that refugee charity engaged in inappropriate activity</a>
+                    <div class="card-meta">
+                        <span class="card-source">Geospatial Commission – GOV.UK</span>
+                        <span class="card-dot">·</span><span class="card-date">7 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">The Charity Commission has closed its compliance case into City of Sanctuary UK, finding no evidence of wrongdoing.……</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.gov.uk/government/news/uk-supports-stronger-womens-representation-in-stem-ecosystem" target="_blank" rel="noopener">UK supports stronger women’s representation in STEM ecosystem</a>
+                    <div class="card-meta">
+                        <span class="card-source">Geospatial Commission – GOV.UK</span>
+                        <span class="card-dot">·</span><span class="card-date">7 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">The British High Commission in Kuala Lumpur hosted the ‘Leading the Future’: Women and Girls in Science Forum to celebrate women scientists.…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.gov.uk/government/news/kenya-call-for-bids-for-the-provision-of-electrical-materials" target="_blank" rel="noopener">Kenya: Call for Bids for the Provision of Electrical Materials</a>
+                    <div class="card-meta">
+                        <span class="card-source">Geospatial Commission – GOV.UK</span>
+                        <span class="card-dot">·</span><span class="card-date">7 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">The British High Commission Nairobi is seeking a competent supplier to provide electrical materials.…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.bbc.com/news/articles/cgqkz5lzvnwo?at_medium=RSS&at_campaign=rss" target="_blank" rel="noopener">Dancer with MND performs on stage again through digital avatar</a>
+                    <div class="card-meta">
+                        <span class="card-source">BBC Technology</span>
+                        <span class="card-dot">·</span><span class="card-date">10 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">Breanna Olson said brainwave tech was able to re-establish the expression and connection she felt had gone.…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.bbc.com/news/articles/cp3l4kwer5ko?at_medium=RSS&at_campaign=rss" target="_blank" rel="noopener">Mayor warns of London 'disinformation blizzard'</a>
+                    <div class="card-meta">
+                        <span class="card-source">BBC Technology</span>
+                        <span class="card-dot">·</span><span class="card-date">10 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">Sir Sadiq Khan claims London is being targeted with disinformation portraying it as a city "in decline".…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.bbc.com/news/articles/ckgx1x742x5o?at_medium=RSS&at_campaign=rss" target="_blank" rel="noopener">Greece to ban social media for under-15s from next year</a>
+                    <div class="card-meta">
+                        <span class="card-source">BBC Technology</span>
+                        <span class="card-dot">·</span><span class="card-date">8 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">It follows similar moves in other European countries, including France and Spain.…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.bbc.com/news/articles/cvg049xz1ygo?at_medium=RSS&at_campaign=rss" target="_blank" rel="noopener">Ex-Meta worker investigated for downloading 30,000 private Facebook photos</a>
+                    <div class="card-meta">
+                        <span class="card-source">BBC Technology</span>
+                        <span class="card-dot">·</span><span class="card-date">7 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">The former employee was fired from Meta after being suspected of downloading 30,000 photos, the company said.…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.bbc.com/news/articles/c8x71ejrp92o?at_medium=RSS&at_campaign=rss" target="_blank" rel="noopener">OpenAI encourages firms to trial four-day weeks to adapt to AI era</a>
+                    <div class="card-meta">
+                        <span class="card-source">BBC Technology</span>
+                        <span class="card-dot">·</span><span class="card-date">7 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">The ChatGPT-maker said its early policy ideas aim to prompt discussions about action needed as AI systems become more capable.…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.bbc.com/news/articles/c70n2rjgxeyo?at_medium=RSS&at_campaign=rss" target="_blank" rel="noopener">Businesses scramble to get noticed by AI search</a>
+                    <div class="card-meta">
+                        <span class="card-source">BBC Technology</span>
+                        <span class="card-dot">·</span><span class="card-date">6 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">Firms are changing the way they present information on their websites, so they get noticed by AI.…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.bbc.com/news/articles/c145enxln0go?at_medium=RSS&at_campaign=rss" target="_blank" rel="noopener">China is winning one AI race, the US another - but either might pull ahead</a>
+                    <div class="card-meta">
+                        <span class="card-source">BBC Technology</span>
+                        <span class="card-dot">·</span><span class="card-date">7 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">Both sides don't want to let their rival dominate. And the competition may yet be transformed further.…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.bbc.co.uk/sounds/play/w3ct8jxp?at_medium=RSS&at_campaign=rss" target="_blank" rel="noopener">Tech Life</a>
+                    <div class="card-meta">
+                        <span class="card-source">BBC Technology</span>
+                        <span class="card-dot">·</span><span class="card-date">7 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">Is there a way to fix AI's problem with trust?…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.gov.uk/government/publications/commissioners-end-of-tenure-letter" target="_blank" rel="noopener">Commissioner's end of tenure letter</a>
+                    <div class="card-meta">
+                        <span class="card-source">Geospatial Commission – GOV.UK</span>
+                        <span class="card-dot">·</span><span class="card-date">10 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">Letter from Lord Anderson, the Interim Independent Prevent Commissioner, to Dan Jarvis, the Security Minister.…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.gov.uk/government/news/what-do-phds-think-about-our-placement-scheme" target="_blank" rel="noopener">What do PhDs think about our placement scheme?</a>
+                    <div class="card-meta">
+                        <span class="card-source">Geospatial Commission – GOV.UK</span>
+                        <span class="card-dot">·</span><span class="card-date">9 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">With more than 200 PhD placements since 2016, alumni share how the scheme has shaped their research, skills and careers.…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.gov.uk/government/news/recruitment-of-four-commissioners-to-the-northern-ireland-human-rights-commission" target="_blank" rel="noopener">Recruitment of four commissioners to the Northern Ireland Human Rights Commission</a>
+                    <div class="card-meta">
+                        <span class="card-source">Geospatial Commission – GOV.UK</span>
+                        <span class="card-dot">·</span><span class="card-date">8 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">The Secretary of State for Northern Ireland invites applications for the appointment of four Commissioners to the Northern Ireland Human Rights Commission.…</p>
+                </article>
+                <article class="card">
+                    <div class="card-badges"></div>
+                    <a class="card-title" href="https://www.bbc.com/news/articles/czjw0zgz9zyo?at_medium=RSS&at_campaign=rss" target="_blank" rel="noopener">Meta pulls Facebook ads recruiting for social media addiction lawsuits</a>
+                    <div class="card-meta">
+                        <span class="card-source">BBC Technology</span>
+                        <span class="card-dot">·</span><span class="card-date">10 Apr 2026</span>
+                    </div>
+                    <p class="card-summary">The Facebook owner recently lost a landmark social media addiction trial in California…</p>
+                </article>
+            </div>
+        </section>
+    </div>
+</div>
+
+<script>
+function setFilter(type, btn) {
+    document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    document.querySelectorAll('.digest-section').forEach(section => {
+        const id = section.id;
+        let show = false;
+
+        if (type === 'all') {
+            show = true;
+        } else if (type === 'priority') {
+            show = ['home-office','ministry-of-justice'].includes(id);
+        } else if (type === 'commercial') {
+            show = id === 'procurement';
+        } else if (type === 'competitive') {
+            show = id === 'competitor-intel';
+        }
+        section.classList.toggle('hidden', !show);
+    });
+}
+
+// Active nav on scroll
+const sections = document.querySelectorAll('.digest-section');
+const navLinks  = document.querySelectorAll('.nav-item');
+const observer  = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+        if (e.isIntersecting) {
+            navLinks.forEach(l => l.classList.remove('active'));
+            const a = document.querySelector(`.nav-item[href="#${e.target.id}"]`);
+            if (a) a.classList.add('active');
+        }
+    });
+}, { rootMargin: '-15% 0px -75% 0px' });
+sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
